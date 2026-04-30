@@ -128,13 +128,11 @@ void kfree(void* virtual_address)
 }
 
 
-/*unsigned int kheap_virtual_address(unsigned int physical_address)
+unsigned int kheap_virtual_address(unsigned int physical_address)
 {
 	uint32 *ptr_page_table = NULL;
 
-	// 1. Strip the lowest 12 bits to get the BASE physical address of the frame
-	// Example: physical_address 0x100050 becomes 0x100000
-	uint32 frame_phys_base = physical_address & ~0xFFF;
+	uint32 frame_phys_base = ROUNDDOWN(physical_address, PAGE_SIZE);
 
 	// 2. MUST use '<', not '<=', to prevent 32-bit integer overflow!
 	for (uint32 i = KERNEL_HEAP_START; i < KERNEL_HEAP_MAX; i += PAGE_SIZE)
@@ -154,16 +152,13 @@ void kfree(void* virtual_address)
 			{
 				// We found the correct frame!
 				// Now, extract the exact byte offset from the original physical_address
-				uint32 offset = PGOFF(physical_address);
-
-				// Return the virtual base address + the byte offset
-				return i + offset;
+				return i + (physical_address % PAGE_SIZE);
 			}
 		}
 	}
 	// no match found
 	return 0;
-}                      */
+}
 	//return the virtual address corresponding to given physical_address
 	//refer to the project presentation and documentation for details
 
