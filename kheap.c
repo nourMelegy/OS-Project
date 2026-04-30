@@ -120,7 +120,7 @@ void kfree(void* virtual_address)
     {
         uint32 current_va = va + (i * PAGE_SIZE);
 
-        // Clears the PTE and frees the frame — does NOT remove the table
+        // Clears the PTE and frees the frame â€” does NOT remove the table
         unmap_frame(ptr_page_directory, (void*)current_va);
     }
 
@@ -128,7 +128,7 @@ void kfree(void* virtual_address)
 }
 
 
-unsigned int kheap_virtual_address(unsigned int physical_address)
+/*unsigned int kheap_virtual_address(unsigned int physical_address)
 {
 	uint32 *ptr_page_table = NULL;
 
@@ -163,7 +163,7 @@ unsigned int kheap_virtual_address(unsigned int physical_address)
 	}
 	// no match found
 	return 0;
-}
+}                      */
 	//return the virtual address corresponding to given physical_address
 	//refer to the project presentation and documentation for details
 
