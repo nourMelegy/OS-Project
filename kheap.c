@@ -133,12 +133,9 @@ unsigned int kheap_virtual_address(unsigned int physical_address)
 	uint32 *ptr_page_table = NULL;
 
 	uint32 frame_phys_base = ROUNDDOWN(physical_address, PAGE_SIZE);
-
-	// 2. MUST use '<', not '<=', to prevent 32-bit integer overflow!
 	for (uint32 i = KERNEL_HEAP_START; i < KERNEL_HEAP_MAX; i += PAGE_SIZE)
 	{
 		struct Frame_Info *ptr = get_frame_info(ptr_page_directory, (void*)i, &ptr_page_table);
-
 		if (ptr == NULL){
 			// frame is not mapped
 			continue;
@@ -146,7 +143,6 @@ unsigned int kheap_virtual_address(unsigned int physical_address)
 		else {
 			// frame is mapped
 			uint32 pa = to_physical_address(ptr);
-
 			// 3. Compare the base frame addresses
 			if (pa == frame_phys_base)
 			{
