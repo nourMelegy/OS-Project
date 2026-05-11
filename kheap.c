@@ -110,22 +110,23 @@ void kfree(void* virtual_address)
 
     if (va % PAGE_SIZE != 0)
         return;
+
     uint32 index = (va - KERNEL_HEAP_START) / PAGE_SIZE;
     uint32 num_pages = kheap_allocation_sizes[index];
+
     if (num_pages == 0)
         return;
-
 
     for (uint32 i = 0; i < num_pages; i++)
     {
         uint32 current_va = va + (i * PAGE_SIZE);
-
-        // Clears the PTE and frees the frame — does NOT remove the table
         unmap_frame(ptr_page_directory, (void*)current_va);
     }
 
     kheap_allocation_sizes[index] = 0;
 }
+
+
 
 
 unsigned int kheap_virtual_address(unsigned int physical_address)
@@ -163,22 +164,16 @@ unsigned int kheap_virtual_address(unsigned int physical_address)
 
 unsigned int kheap_physical_address(unsigned int virtual_address)
 {
-	//TODO: [PROJECT 2026 - [4] Kernel Heap] kheap_physical_address()
+    uint32 *ptr_page_table = NULL;
 
-	uint32 *ptr_page_table = NULL;
+    struct Frame_Info *frame = get_frame_info(ptr_page_directory, (void*)virtual_address, &ptr_page_table);
 
-	struct Frame_Info *ptr_frame_info = get_frame_info(ptr_page_directory, (void*)virtual_address, &ptr_page_table);
+    if (frame != NULL)
+    {
+        uint32 physical_base = to_physical_address(frame);
+        uint32 offset = virtual_address & 0xFFF;
+        return physical_base + offset;
+    }
 
-	if (ptr_frame_info != NULL)
-	{
-		uint32 physical_base = to_physical_address(ptr_frame_info);
-
-		uint32 offset = PGOFF(virtual_address);
-
-		return physical_base + offset;
-	}
-
-	return 0;
+    return 0;
 }
-
-
